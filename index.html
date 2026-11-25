@@ -22,34 +22,34 @@
   padding-top: env(safe-area-inset-top, 0px);
   padding-bottom: env(safe-area-inset-bottom, 0px);
 
-  --bg: #F2F4F1;
-  --ink: #13212E;
-  --muted: #50616E;
-  --rule: #C9D2CF;
-  --link: #1A4E86;
-  --band: #E4EAE7;
-  --board: #0E2A47;
-  --deep: #091D33;
-  --board-ink: #EEF2EE;
-  --board-muted: #A9BDCE;
-  --board-rule: #2A4A6B;
-  --gold: #E2B93B;
-  --gold-ink: #7A5C00;
-  --arrsy: #EFE7DA;
+  --bg: #F6FCFE;
+  --ink: #03045E;
+  --muted: #3B5578;
+  --rule: #A8DCEA;
+  --link: #0077B6;
+  --band: #E5F7FB;
+  --board: #03045E;
+  --deep: #020340;
+  --board-ink: #F2FBFD;
+  --board-muted: #90E0EF;
+  --board-rule: #1D2A86;
+  --gold: #00B4D8;
+  --gold-ink: #0077B6;
+  --arrsy: #CAF0F8;
 
   --font: "Archivo", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     color-scheme: dark;
-    --bg: #081726; --ink: #E8EDEA; --muted: #9FB0BD; --rule: #223B55;
-    --link: #8FBDE8; --band: #0B1E32; --gold-ink: #E2B93B; --arrsy: #1C1A16;
+    --bg: #02033F; --ink: #EAF8FC; --muted: #9CC9D8; --rule: #1D2A86;
+    --link: #90E0EF; --band: #03045E; --gold-ink: #00B4D8; --arrsy: #00324F;
   }
 }
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --bg: #081726; --ink: #E8EDEA; --muted: #9FB0BD; --rule: #223B55;
-  --link: #8FBDE8; --band: #0B1E32; --gold-ink: #E2B93B; --arrsy: #1C1A16;
+  --bg: #02033F; --ink: #EAF8FC; --muted: #9CC9D8; --rule: #1D2A86;
+  --link: #90E0EF; --band: #03045E; --gold-ink: #00B4D8; --arrsy: #00324F;
 }
 
 *, *::before, *::after { box-sizing: inherit; }
@@ -101,7 +101,7 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .stage canvas:active { cursor: grabbing; }
 .stage::after {
   content: ""; position: absolute; inset: 0; pointer-events: none;
-  background: linear-gradient(90deg, var(--board) 0%, rgba(14, 42, 71, 0.94) 26%, rgba(14, 42, 71, 0) 58%);
+  background: linear-gradient(90deg, var(--board) 0%, rgba(3, 4, 94, 0.94) 26%, rgba(3, 4, 94, 0) 58%);
 }
 .hero-copy { position: relative; z-index: 2; width: 100%; pointer-events: none; padding-top: 3rem; padding-bottom: 3rem; }
 .hero-copy > * { max-width: 34rem; }
@@ -122,7 +122,7 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   border: 1.5px solid var(--board-ink); background: transparent; color: var(--board-ink);
 }
 .hero .btn, .contact .btn { color: var(--board-ink); }
-.btn.solid, .hero .btn.solid, .contact .btn.solid { background: var(--gold); border-color: var(--gold); color: #1B1605; }
+.btn.solid, .hero .btn.solid, .contact .btn.solid { background: var(--gold); border-color: var(--gold); color: #03045E; }
 .btn:hover { filter: brightness(1.1); }
 
 .scan-meta {
@@ -209,8 +209,8 @@ figcaption { margin-top: 0.65rem; color: var(--muted); font-size: 0.95rem; max-w
 .rolefig { grid-column: 2 / -1; }
 .rolefig img { aspect-ratio: 4 / 3; object-fit: cover; }
 
-.stack { margin-top: 2.5rem; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; }
-.stack figcaption { font-size: 0.88rem; }
+.stack { margin-top: 2.5rem; display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.75rem; }
+.stack figcaption { font-size: 0.95rem; }
 #arrsy { background: var(--arrsy); }
 /* build rows */
 .rows { margin-top: 3rem; border-top: 2px solid var(--ink); }
@@ -236,7 +236,7 @@ figcaption { margin-top: 0.65rem; color: var(--muted); font-size: 0.95rem; max-w
 
 /* ---------- Image viewer ---------- */
 #viewer { border: 0; padding: 0; background: var(--deep); color: var(--board-ink); max-width: min(96vw, 92rem); max-height: 94vh; border-radius: 4px; }
-#viewer::backdrop { background: rgba(4, 12, 22, 0.86); }
+#viewer::backdrop { background: rgba(2, 3, 40, 0.88); }
 #viewer img { display: block; max-width: 100%; max-height: 80vh; width: auto; height: auto; margin: 0 auto; }
 #viewer .bar { display: flex; gap: 1.5rem; justify-content: space-between; align-items: flex-start; padding: 0.85rem 1rem; }
 #viewer p { font-size: 0.95rem; color: var(--board-muted); max-width: 70ch; }
@@ -591,12 +591,12 @@ figcaption { margin-top: 0.65rem; color: var(--muted); font-size: 0.95rem; max-w
 
   // colours (little-endian ABGR)
   function abgr(r, g, b) { return (255 << 24) | (b << 16) | (g << 8) | r; }
-  var BG = abgr(0x0E, 0x2A, 0x47);
-  var GOLD = abgr(0xE2, 0xB9, 0x3B);
+  var BG = abgr(0x03, 0x04, 0x5E);
+  var GOLD = abgr(0x00, 0xB4, 0xD8);
   var LUT = new Uint32Array(32);
   for (var q = 0; q < 32; q++) {
     var f = q / 31;
-    LUT[q] = abgr(Math.round(0x1E + (0xF4 - 0x1E) * f), Math.round(0x40 + (0xF6 - 0x40) * f), Math.round(0x66 + (0xF1 - 0x66) * f));
+    LUT[q] = abgr(Math.round(0x00 + (0xCA - 0x00) * f), Math.round(0x4E + (0xF0 - 0x4E) * f), Math.round(0x96 + (0xF8 - 0x96) * f));
   }
 
   var W = 0, H = 0, img = null, buf = null, dot = 1, wide = false;
