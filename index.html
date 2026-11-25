@@ -35,6 +35,7 @@
   --board-rule: #2A4A6B;
   --gold: #E2B93B;
   --gold-ink: #7A5C00;
+  --arrsy: #EFE7DA;
 
   --font: "Archivo", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
 }
@@ -42,13 +43,13 @@
   :root:not([data-theme="light"]) {
     color-scheme: dark;
     --bg: #081726; --ink: #E8EDEA; --muted: #9FB0BD; --rule: #223B55;
-    --link: #8FBDE8; --band: #0B1E32; --gold-ink: #E2B93B;
+    --link: #8FBDE8; --band: #0B1E32; --gold-ink: #E2B93B; --arrsy: #1C1A16;
   }
 }
 :root[data-theme="dark"] {
   color-scheme: dark;
   --bg: #081726; --ink: #E8EDEA; --muted: #9FB0BD; --rule: #223B55;
-  --link: #8FBDE8; --band: #0B1E32; --gold-ink: #E2B93B;
+  --link: #8FBDE8; --band: #0B1E32; --gold-ink: #E2B93B; --arrsy: #1C1A16;
 }
 
 *, *::before, *::after { box-sizing: inherit; }
@@ -208,6 +209,9 @@ figcaption { margin-top: 0.65rem; color: var(--muted); font-size: 0.95rem; max-w
 .rolefig { grid-column: 2 / -1; }
 .rolefig img { aspect-ratio: 4 / 3; object-fit: cover; }
 
+.stack { margin-top: 2.5rem; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; }
+.stack figcaption { font-size: 0.88rem; }
+#arrsy { background: var(--arrsy); }
 /* build rows */
 .rows { margin-top: 3rem; border-top: 2px solid var(--ink); }
 .row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr); gap: 2.5rem; padding: 1.75rem 0; border-bottom: 1px solid var(--rule); }
@@ -316,6 +320,16 @@ figcaption { margin-top: 0.65rem; color: var(--muted); font-size: 0.95rem; max-w
         <p class="links">
           <a href="https://github.com/HellbeE908/SPECTER" target="_blank" rel="noopener">Code and docs on GitHub</a>
         </p>
+        <div class="stack">
+      <figure class="tile">
+        <button type="button" class="zoom" aria-label="Enlarge image"><img src="cad-front.jpg" width="1000" height="833" loading="lazy" alt="CAD render of the SPECTER unit with a translucent enclosure, showing the RPLIDAR on a shaft at the front, the motor, bearings, electronics and a cooling fan."></button>
+        <figcaption>The unit in CAD. The RPLIDAR C1 rides on a shaft carried by two bearings and turned by the motor behind it.</figcaption>
+      </figure>
+      <figure class="tile">
+        <button type="button" class="zoom" aria-label="Enlarge image"><img src="cad-rear.jpg" width="1000" height="833" loading="lazy" alt="CAD render of the SPECTER unit from the rear, showing the cooling fan on the enclosure and the RPLIDAR at the side."></button>
+        <figcaption>Rear view, with the cooling fan and the Raspberry Pi 5 inside the enclosure.</figcaption>
+      </figure>
+        </div>
       </div>
 
       <dl class="spec">
@@ -346,16 +360,6 @@ figcaption { margin-top: 0.65rem; color: var(--muted); font-size: 0.95rem; max-w
       <figure class="tile tall">
         <button type="button" class="zoom" aria-label="Enlarge image"><img src="room.jpg" width="1000" height="833" loading="lazy" alt="Greyscale point cloud of a room seen from outside: walls, a doorway, a desk with a chair and a ceiling fan."></button>
         <figcaption>A single-station indoor scan of about 250,000 points. The starburst on the left wall is where samples crowd around the nod axis; the dark spot at its centre is the 10 cm hole left by the 50 mm offset.</figcaption>
-      </figure>
-    </div>
-    <div class="pair">
-      <figure class="tile">
-        <button type="button" class="zoom" aria-label="Enlarge image"><img src="cad-front.jpg" width="1000" height="833" loading="lazy" alt="CAD render of the SPECTER unit with a translucent enclosure, showing the RPLIDAR on a shaft at the front, the motor, bearings, electronics and a cooling fan."></button>
-        <figcaption>The unit in CAD. The RPLIDAR C1 rides on a shaft carried by two bearings and turned by the motor behind it.</figcaption>
-      </figure>
-      <figure class="tile">
-        <button type="button" class="zoom" aria-label="Enlarge image"><img src="cad-rear.jpg" width="1000" height="833" loading="lazy" alt="CAD render of the SPECTER unit from the rear, showing the cooling fan on the enclosure and the RPLIDAR at the side."></button>
-        <figcaption>Rear view, with the cooling fan and the Raspberry Pi 5 inside the enclosure.</figcaption>
       </figure>
     </div>
   </div>
@@ -597,15 +601,16 @@ figcaption { margin-top: 0.65rem; color: var(--muted); font-size: 0.95rem; max-w
 
   var W = 0, H = 0, img = null, buf = null, dot = 1, wide = false;
   function resize() {
-    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    var narrow = cv.clientWidth <= 820;
+    var dpr = Math.min(window.devicePixelRatio || 1, narrow ? 3 : 2);
     var w = Math.max(1, Math.round(cv.clientWidth * dpr));
     var h = Math.max(1, Math.round(cv.clientHeight * dpr));
     if (w === W && h === H) return;
     W = w; H = h; cv.width = W; cv.height = H;
     img = ctx.createImageData(W, H);
     buf = new Uint32Array(img.data.buffer);
-    dot = dpr >= 1.5 ? 2 : 1;
-    wide = cv.clientWidth > 820;
+    dot = !narrow && dpr >= 1.5 ? 2 : 1;
+    wide = !narrow;
     draw();
   }
 
