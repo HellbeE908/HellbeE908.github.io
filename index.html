@@ -36,6 +36,11 @@
   --gold: #E2B93B;
   --gold-ink: #7A5C00;
   --arrsy: #F6DFA6;
+  --c-specter: #E6EEF5;
+  --c-exp: #E4EEE6;
+  --c-builds: #ECE8F4;
+  --c-tools: #F2F4F1;
+  --c-record: #F5E7DE;
 
   --font: "Archivo", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
 }
@@ -43,13 +48,13 @@
   :root:not([data-theme="light"]) {
     color-scheme: dark;
     --bg: #081726; --ink: #E8EDEA; --muted: #9FB0BD; --rule: #223B55;
-    --link: #8FBDE8; --band: #0B1E32; --gold-ink: #E2B93B; --arrsy: #3A2C0B;
+    --link: #8FBDE8; --band: #0B1E32; --gold-ink: #E2B93B; --arrsy: #3A2C0B; --c-specter: #0B1E33; --c-exp: #0D2420; --c-builds: #1A1830; --c-tools: #081726; --c-record: #2A1A16;
   }
 }
 :root[data-theme="dark"] {
   color-scheme: dark;
   --bg: #081726; --ink: #E8EDEA; --muted: #9FB0BD; --rule: #223B55;
-  --link: #8FBDE8; --band: #0B1E32; --gold-ink: #E2B93B; --arrsy: #3A2C0B;
+  --link: #8FBDE8; --band: #0B1E32; --gold-ink: #E2B93B; --arrsy: #3A2C0B; --c-specter: #0B1E33; --c-exp: #0D2420; --c-builds: #1A1830; --c-tools: #081726; --c-record: #2A1A16;
 }
 
 *, *::before, *::after { box-sizing: inherit; }
@@ -213,6 +218,12 @@ figcaption { margin-top: 0.65rem; color: var(--muted); font-size: 0.95rem; max-w
 .stack { margin-top: 2.5rem; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; }
 .stack figcaption { font-size: 0.88rem; }
 #arrsy { background: var(--arrsy); }
+#specter { background: var(--c-specter); }
+#experience { background: var(--c-exp); }
+#builds { background: var(--c-builds); }
+#toolkit { background: var(--c-tools); }
+#record { background: var(--c-record); }
+#experience .role::before { background: var(--c-exp); }
 /* build rows */
 .rows { margin-top: 3rem; border-top: 2px solid var(--ink); }
 .row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr); gap: 2.5rem; padding: 1.75rem 0; border-bottom: 1px solid var(--rule); }
@@ -513,7 +524,7 @@ figcaption { margin-top: 0.65rem; color: var(--muted); font-size: 0.95rem; max-w
 
 <section class="section band" id="record">
   <div class="wrap">
-    <h2>Competitions, writing and study</h2>
+    <h2>Competitions, Writing and Study</h2>
     <div class="cols">
       <div>
         <h3>Competitions</h3>
