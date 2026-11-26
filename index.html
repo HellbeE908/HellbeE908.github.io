@@ -93,6 +93,7 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .topnav .navlinks::-webkit-scrollbar { display: none; }
 .topnav .navlinks a { color: var(--board-muted); text-decoration: none; }
 .topnav .navlinks a:hover { color: var(--board-ink); text-decoration: underline; }
+.topnav .navlinks a.on { color: var(--board-ink); text-decoration: underline; text-decoration-color: var(--gold); text-decoration-thickness: 2px; text-underline-offset: 0.45em; }
 
 /* ---------- Hero ---------- */
 .hero { background: var(--board); color: var(--board-ink); }
@@ -258,7 +259,11 @@ figcaption { margin-top: 0.65rem; color: var(--muted); font-size: 0.95rem; max-w
   .section { padding-top: 3.5rem; padding-bottom: 3.5rem; }
   .spec div { grid-template-columns: minmax(0, 1fr); gap: 0.1rem; }
   .topnav { gap: 1rem; }
-  .topnav .navlinks { gap: 1.1rem; }
+  .topnav .mark { display: none; }
+  .topnav .navlinks { gap: 1.35rem; margin-left: 0; flex: 1; }
+  .topnav .navlinks.fr { -webkit-mask-image: linear-gradient(90deg, #000 84%, transparent); mask-image: linear-gradient(90deg, #000 84%, transparent); }
+  .topnav .navlinks.fl { -webkit-mask-image: linear-gradient(90deg, transparent, #000 14%); mask-image: linear-gradient(90deg, transparent, #000 14%); }
+  .topnav .navlinks.fl.fr { -webkit-mask-image: linear-gradient(90deg, transparent, #000 14%, #000 84%, transparent); mask-image: linear-gradient(90deg, transparent, #000 14%, #000 84%, transparent); }
 }
 
 </style>
@@ -280,11 +285,11 @@ figcaption { margin-top: 0.65rem; color: var(--muted); font-size: 0.95rem; max-w
 
 <header class="hero" id="top">
   <div class="stage">
-    <canvas id="scan" tabindex="0" role="img" aria-label="Animated point cloud of a park scanned with SPECTER: benches, a path and tree canopy, building up station by station, then labelled: tree canopy, benches, a tree trunk, a lamp post and paved ground. Drag or use the arrow keys to orbit."></canvas>
+    <canvas id="scan" tabindex="0" role="img" aria-label="Animated 3D scan of a park made with SPECTER. It builds up point by point, then labels point out the tree canopy, benches, a tree trunk, a lamp post and the paved ground. Drag or use the arrow keys to turn it."></canvas>
     <div class="hero-copy wrap">
       <h1>Rahul Gupta</h1>
-      <p class="lede">I design the boards, write the firmware and model the enclosures for hardware that ships.</p>
-      <p class="sub">Electronics and communication engineering student in Gurugram. Two hardware startups, three shipped products, and a 3D LiDAR scanner I built myself.</p>
+      <p class="lede">I design PCBs (printed circuit boards), the code that runs on them and the enclosures that hold them, for electronics that become real products.</p>
+      <p class="sub">I’m an electronics engineering student in Gurugram. I’ve worked at two hardware startups, helped ship three products, and built my own 3D laser scanner.</p>
       <div class="actions">
         <a class="btn solid" href="#specter">See the scanner</a>
         <a class="btn" href="mailto:guptarahul0197@gmail.com">Email me</a>
@@ -292,7 +297,7 @@ figcaption { margin-top: 0.65rem; color: var(--muted); font-size: 0.95rem; max-w
     </div>
   </div>
   <div class="scan-meta wrap">
-    <span>This is a real SPECTER scan: the four-station park survey, thinned so it loads quickly. Drag to orbit.</span>
+    <span>This is a real 360° 3D scan of a park, made with my scanner, SPECTER. Drag it to look around.</span>
     <span><strong id="count">0</strong> of 1,24,238 points drawn &nbsp; <button type="button" id="rescan">Replay the scan</button></span>
   </div>
 </header>
@@ -301,49 +306,49 @@ figcaption { margin-top: 0.65rem; color: var(--muted); font-size: 0.95rem; max-w
 
 <section class="section" id="specter">
   <div class="wrap">
-    <h2>SPECTER: a 3D LiDAR scanner for the price of a laptop</h2>
-    <p class="intro">Terrestrial laser scanners cost ₹27–81 lakh before import duty, so most civic structures in India are still recorded with tapes and photographs. SPECTER rotates a 2D LiDAR to scan buildings, rooms and parks in 3D, and the complete unit costs ₹41,256, 60 to 190 times less.</p>
+    <h2>SPECTER: a 3D laser scanner for the price of a laptop</h2>
+    <p class="intro">A 3D laser scanner bounces laser light off everything around it and records millions of points that together make an exact 3D copy of a room, a building or a park. Professional scanners cost ₹27–81 lakh, so most buildings in India are still measured with tapes and photos. SPECTER does the same job for ₹41,256.</p>
 
     <div class="lead">
       <figure class="wide">
         <button type="button" class="zoom" aria-label="Enlarge image"><img src="park.jpg" width="1600" height="800" loading="lazy" alt="Greyscale point cloud of a park: benches in the foreground, a paved path, lamp posts and a dense tree canopy overhead."></button>
-        <figcaption>The park survey: four stations, 5 to 7 m apart, merged into one cloud of 1.2 million points covering about 475 m². Bench slats, trunks and paving joints stay single and sharp where stations overlap.</figcaption>
+        <figcaption>A park, scanned from four spots and joined into one 3D model of 1.2 million points covering about 475 m². You can pick out each bench, tree trunk and paving stone.</figcaption>
       </figure>
     </div>
 
     <div class="split">
       <div class="prose">
-        <p>I built SPECTER with one teammate, as our entry to the Vishwakarma Awards, and we are writing it up as an IEEE-format research paper.</p>
-        <p>An RPLIDAR C1 spins a laser in one plane. SPECTER tilts that plane through ±100° on a belt-driven spindle, so the slices stack into a full 3D point cloud. A Raspberry Pi 5 reads the sensor through a driver written from its protocol specification and exports LAS files that survey software opens directly. A XIAO ESP32-S3 generates the stepper pulses, because Linux can pause a process for milliseconds and every lost pulse would become a silent error in position.</p>
-        <p>Two findings came from testing against predictions rather than trusting the output. The first firmware moved the axis step by step and drifted 3.6° per motor revolution while reporting the requested angle; computing every move from the absolute target holds the error within ±0.11°. And mounting the sensor 50 mm off the axis did not even out the sampling as we expected: it spread the dense patch into a ring and left an unsampled hole 10 cm across. What the offset does do is keep the motor, bearings and electronics out of the scan plane.</p>
-        <p>On the merged park survey, planes fitted to the ground leave a median residual of 15.7 mm. Validation against a tape and a total station is in progress.</p>
+        <p>I built SPECTER with one teammate for the Vishwakarma Awards, and we’re writing a research paper on it.</p>
+        <p>How it works: a small laser sensor spins in a circle, measuring distances in one flat slice. SPECTER slowly tilts that sensor around a horizontal axis, so the slices add up to a full 3D model of everything around it. A Raspberry Pi 5 collects the measurements and saves them in the file format surveyors use. A separate microcontroller and motor driver run the stepper motor, because it has to stop at precise angles.</p>
+        <p>Testing taught us two things. Our first motor code lost a tiny bit of angle on every move, adding up to 3.6° of error per motor turn without any warning; we changed it to work out every position from scratch, which keeps the error under 0.11°. We also mounted the sensor slightly off-centre, expecting it to spread the measurements more evenly. It didn’t, but it does keep the motor and electronics from getting in the way of the scan.</p>
+        <p>In the park scan, flat ground comes out flat to within about 1.6 cm. We’re now checking its measurements against a tape measure and a professional survey instrument.</p>
         <p class="links">
           <a href="https://github.com/HellbeE908/SPECTER" target="_blank" rel="noopener">Code and docs on GitHub</a>
         </p>
         <div class="stack">
       <figure class="tile">
         <button type="button" class="zoom" aria-label="Enlarge image"><img src="cad-front.jpg" width="1000" height="833" loading="lazy" alt="CAD render of the SPECTER unit with a translucent enclosure, showing the RPLIDAR on a shaft at the front, the motor, bearings, electronics and a cooling fan."></button>
-        <figcaption>The unit in CAD. The RPLIDAR C1 rides on a shaft carried by two bearings and turned by the motor behind it.</figcaption>
+        <figcaption>The design in CAD. The laser sensor sits on a shaft that the motor tilts up and down.</figcaption>
       </figure>
       <figure class="tile">
         <button type="button" class="zoom" aria-label="Enlarge image"><img src="cad-rear.jpg" width="1000" height="833" loading="lazy" alt="CAD render of the SPECTER unit from the rear, showing the cooling fan on the enclosure and the RPLIDAR at the side."></button>
-        <figcaption>Rear view, with the cooling fan and the Raspberry Pi 5 inside the enclosure.</figcaption>
+        <figcaption>From behind: the cooling fan and the Raspberry Pi inside the enclosure.</figcaption>
       </figure>
         </div>
       </div>
 
       <dl class="spec">
-        <div><dt>Sensor</dt><dd>RPLIDAR C1 <small>360° direct time-of-flight, 12 m range, ±30 mm</small></dd></div>
-        <div><dt>Motion</dt><dd>NEMA 17 stepper, 20:60 GT2 belt <small>TMC2209 driver on a XIAO ESP32-S3; 0.075° per microstep at the spindle</small></dd></div>
-        <div><dt>Compute</dt><dd>Raspberry Pi 5 <small>capture, coordinate transform, LAS export</small></dd></div>
-        <div><dt>Coverage</dt><dd>±100° nod, 360° scan <small>sensor 50 mm off the nod axis</small></dd></div>
-        <div><dt>Densest station</dt><dd>464,618 points in 209 s</dd></div>
-        <div><dt>Largest survey</dt><dd>1.2 million points <small>four stations in a park, about 475 m²</small></dd></div>
-        <div><dt>Ground plane fit</dt><dd>15.7 mm RMS <small>median over 62 one-metre patches of the merged survey</small></dd></div>
-        <div><dt>Axis error</dt><dd>±0.11° at the motor <small>against 3.6° per revolution with incremental stepping</small></dd></div>
-        <div><dt>Battery</dt><dd>66.6 Wh lithium-ion pack <small>about 2.5 h per charge (estimated)</small></dd></div>
-        <div><dt>Cost of the unit</dt><dd>₹41,256 <small>complete, including the Pi, battery, enclosure and tripod</small></dd></div>
-        <div><dt>Commercial scanners</dt><dd>₹27–81 lakh <small>Leica BLK360 G2, FARO Focus, Leica RTC360</small></dd></div>
+        <div><dt>Laser sensor</dt><dd>RPLIDAR C1 <small>spins a full circle, sees up to 12 m, accurate to about 3 cm</small></dd></div>
+        <div><dt>Tilt motor</dt><dd>Stepper motor with a belt drive <small>moves in steps of 0.075°</small></dd></div>
+        <div><dt>Computer</dt><dd>Raspberry Pi 5 <small>records each scan and saves standard survey files</small></dd></div>
+        <div><dt>Coverage</dt><dd>Almost everything around it <small>tilts 100° each way while the sensor spins</small></dd></div>
+        <div><dt>Most detailed scan</dt><dd>464,618 points <small>in about 3½ minutes</small></dd></div>
+        <div><dt>Biggest scan</dt><dd>1.2 million points <small>a park, from four spots, about 475 m²</small></dd></div>
+        <div><dt>Flat ground</dt><dd>flat to about 1.6 cm <small>typical, over 62 one-metre squares of the park scan</small></dd></div>
+        <div><dt>Tilt accuracy</dt><dd>within 0.11° <small>down from 3.6° of drift in the first version</small></dd></div>
+        <div><dt>Battery</dt><dd>66.6 Wh battery pack <small>about 2.5 hours per charge (estimated)</small></dd></div>
+        <div><dt>Total cost</dt><dd>₹41,256 <small>everything, including the computer, battery, enclosure and tripod</small></dd></div>
+        <div><dt>Professional scanners</dt><dd>₹27–81 lakh <small>Leica BLK360 G2, FARO Focus, Leica RTC360</small></dd></div>
         <div><dt>Recognition</dt><dd>Stage 3, Vishwakarma Awards 2026–27 <small>team of two, Sustainable Cities theme</small></dd></div>
       </dl>
     </div>
@@ -351,15 +356,15 @@ figcaption { margin-top: 0.65rem; color: var(--muted); font-size: 0.95rem; max-w
     <div class="media">
       <figure class="tile tall">
         <button type="button" class="zoom" aria-label="Enlarge image"><img src="specter-park-1.jpg" width="600" height="750" loading="lazy" alt="The SPECTER scanner, a white box with the LiDAR on top, mounted on a tall tripod in a park with red benches and trees behind it."></button>
-        <figcaption>SPECTER on its tripod at one of the four park stations.</figcaption>
+        <figcaption>SPECTER on its tripod in the park, at one of the four scanning spots.</figcaption>
       </figure>
       <figure class="tile tall">
         <button type="button" class="zoom" aria-label="Enlarge image"><img src="specter-park-2.jpg" width="600" height="750" loading="lazy" alt="Closer view of SPECTER on its tripod in the park, in front of three red benches."></button>
-        <figcaption>Another station of the same survey. The benches behind it are the ones in the scan above.</figcaption>
+        <figcaption>Another scanning spot. These are the same benches you can see in the 3D scan.</figcaption>
       </figure>
       <figure class="tile tall">
         <button type="button" class="zoom" aria-label="Enlarge image"><img src="room.jpg" width="1000" height="833" loading="lazy" alt="Greyscale point cloud of a room seen from outside: walls, a doorway, a desk with a chair and a ceiling fan."></button>
-        <figcaption>A single-station indoor scan of about 250,000 points. The starburst on the left wall is where samples crowd around the nod axis; the dark spot at its centre is the 10 cm hole left by the 50 mm offset.</figcaption>
+        <figcaption>A room scanned from one spot, about 250,000 points. The bright burst on the left wall is where measurements bunch up, a side effect of how the sensor tilts.</figcaption>
       </figure>
     </div>
   </div>
@@ -368,39 +373,39 @@ figcaption { margin-top: 0.65rem; color: var(--muted); font-size: 0.95rem; max-w
 <section class="section band" id="arrsy">
   <div class="wrap">
     <h2>ARRSY: a crash detector that calls for help on its own</h2>
-    <p class="intro">India recorded 4,61,312 road accidents and 1,68,491 deaths in 2022, according to the Ministry of Road Transport and Highways, and help often arrives late. ARRSY, the Auto Rescue Response System, rides in the vehicle, recognises a crash or a rollover, and sends the location without anyone reaching for a phone.</p>
+    <p class="intro">In 2022, India had 4,61,312 road accidents and 1,68,491 deaths, according to the Ministry of Road Transport and Highways, and many victims wait too long for help. ARRSY, short for Auto Rescue Response System, is a small device that sits in a car, notices when it crashes or rolls over, and sends its location for help, even if nobody can reach a phone.</p>
 
     <div class="split">
       <figure class="photo">
         <button type="button" class="zoom" aria-label="Enlarge image"><img src="arrsy-prototype.jpg" width="1064" height="798" loading="lazy" alt="Photo of the ARRSY prototype on green perfboard: an Arduino Nano ESP32, a GPS module with a ceramic patch antenna, a red push button, a cellular modem board with a stub antenna and a lithium cell."></button>
-        <figcaption>The working prototype: Nano ESP32, GPS receiver with its patch antenna, cellular modem, SOS button and a lithium cell, hand-wired on perfboard.</figcaption>
+        <figcaption>The working prototype: a small controller board, a GPS receiver, a mobile-network modem, an SOS button and a battery, wired by hand.</figcaption>
       </figure>
 
       <div>
         <div class="prose">
-          <p>The prototype is built around an Arduino Nano ESP32 with an MPU6050 motion sensor, a GPS receiver and a cellular modem. A companion Android app shows live sensor data and the vehicle’s orientation, and carries the emergency alert with the GPS position.</p>
-          <p>The hard part was false alarms. To a single sensor, a pothole or hard braking looks a lot like an impact, so the firmware cross-checks acceleration, rotation and tilt, filters out road vibration, and only then decides.</p>
+          <p>Inside are a motion sensor that feels sudden jolts and tilting, a GPS receiver that knows where the car is, and a mobile-network modem that sends the alert. A phone app shows what the sensors are reading and where the car is.</p>
+          <p>The hardest part was avoiding false alarms. To a single sensor, a pothole or sudden braking can look like a crash, so ARRSY checks several signals together and ignores normal road bumps before deciding.</p>
         </div>
 
-        <h3 class="steps-title">How the response is designed to work</h3>
+        <h3 class="steps-title">What happens in a crash</h3>
         <ol class="steps">
-          <li>ARRSY switches on with the ignition and starts watching vibration, tilt and motion.</li>
-          <li>It detects a crash or rollover, or someone presses the SOS button.</li>
+          <li>ARRSY turns on with the car and keeps watching for jolts, tilting and sudden stops.</li>
+          <li>It notices a crash or rollover, or someone presses the SOS button.</li>
           <li>A 15-second countdown starts, so a false alarm can be cancelled.</li>
-          <li>If nobody cancels, the alert goes out to emergency services with the vehicle’s location.</li>
+          <li>If nobody cancels, it sends an alert with the car’s location to emergency services.</li>
         </ol>
-        <p class="parts">Arduino Nano ESP32, MPU6050, GPS, cellular modem, TinyML in C and C++, Android. Built with a teammate and selected for the MVP round of Microsoft Imagine Cup 2023.</p>
+        <p class="parts">Built with a teammate and selected for the MVP round of Microsoft Imagine Cup 2023. Made with an Arduino Nano ESP32, an MPU6050 motion sensor, GPS, a cellular modem, TinyML, C and C++, and Android.</p>
       </div>
     </div>
 
     <div class="pair">
       <figure class="sheet">
         <button type="button" class="zoom" aria-label="Enlarge image"><img src="arrsy-wiring.jpg" width="1190" height="701" loading="lazy" alt="Wiring diagram: an Arduino Nano ESP32 connected to a cellular shield, a GPS module with antenna, an MPU6050 motion sensor and a push button."></button>
-        <figcaption>Wiring. The Nano ESP32 talks to the motion sensor, the GPS module and the cellular shield.</figcaption>
+        <figcaption>How it’s wired: the main board connects to the motion sensor, the GPS and the mobile-network modem.</figcaption>
       </figure>
       <figure class="sheet">
         <button type="button" class="zoom" aria-label="Enlarge image"><img src="arrsy-flow.jpg" width="1600" height="782" loading="lazy" alt="Flowchart of the ARRSY response: ignition, monitoring, crash or SOS press, a 15 second cancel timer, event classification, and contact with emergency services."></button>
-        <figcaption>The full response flow, from ignition to the emergency call.</figcaption>
+        <figcaption>The full sequence, from starting the car to the emergency call.</figcaption>
       </figure>
     </div>
   </div>
@@ -408,8 +413,8 @@ figcaption { margin-top: 0.65rem; color: var(--muted); font-size: 0.95rem; max-w
 
 <section class="section" id="experience">
   <div class="wrap">
-    <h2>Two startups, both shipping wearables</h2>
-    <p class="intro">In both roles I owned the board and the enclosure, and worked next to the people writing the firmware and software that ran on them.</p>
+    <h2>Two startups, both building wearable devices</h2>
+    <p class="intro">At both startups I designed the PCBs inside the device and, in Fusion 360, the enclosure around it, working closely with the people who wrote its software.</p>
 
     <div class="roles">
       <article class="role">
@@ -417,18 +422,18 @@ figcaption { margin-top: 0.65rem; color: var(--muted); font-size: 0.95rem; max-w
         <div>
           <h3>Hardware Engineering Intern</h3>
           <p class="where">Careflick, Inc., Gurugram</p>
-          <p class="what">An AI voice-assistant wearable for senior citizens. I manage the PCB design and the CAD of the casing, from concept to working prototype.</p>
+          <p class="what">A wearable voice assistant for older people, so they can get help or information just by speaking. I design its PCBs and its enclosure, from first idea to working prototype.</p>
         </div>
         <ul class="points">
-          <li>Designed the device’s 8-layer PCB on my own, fitting a full voice-assistant compute stack into a wearable form factor.</li>
-          <li>Solved an antenna and RF reconfiguration problem by working from the vendor’s reference schematics.</li>
-          <li>Took the casing through more than 70 prototypes to get the fit, feel and assembly right.</li>
-          <li>Coordinated with the firmware, AI/ML, backend and mobile-app teams so the interfaces lined up.</li>
+          <li>Designed the device’s main PCB on my own: 8 layers of wiring packed into something small enough to wear.</li>
+          <li>Fixed an RF antenna problem by working through the chip maker’s reference designs.</li>
+          <li>Refined the enclosure through more than 70 prototypes until it fit, felt right and was easy to put together.</li>
+          <li>Worked with the software, AI, server and app teams so every part connected properly.</li>
         </ul>
         <div class="board3d">
           <div class="pcb" id="pcb"></div>
           <div class="under">
-            <p id="pcb-note">The Careflick board in 3D, exported from KiCad. It measures 22 × 42 mm. Drag to rotate.</p>
+            <p id="pcb-note">The Careflick PCB in 3D. It’s 22 × 42 mm, smaller than a matchbox. Drag to turn it.</p>
             <button type="button" id="pcb-flip">Show the underside</button>
           </div>
         </div>
@@ -439,17 +444,17 @@ figcaption { margin-top: 0.65rem; color: var(--muted); font-size: 0.95rem; max-w
         <div>
           <h3>IoT Hardware Intern</h3>
           <p class="where">OculoSense Pvt Ltd, Gurugram</p>
-          <p class="what">An obstacle-detection wearable with haptic feedback.</p>
+          <p class="what">Glasses that detect obstacles ahead and warn the wearer with a gentle vibration.</p>
         </div>
         <ul class="points">
-          <li>Designed a custom 4-layer battery-management PCB in KiCad that cut the flagship wearable’s volume by 18% and its weight by 12%.</li>
-          <li>Moved sensor polling to interrupt-driven callbacks to reduce haptic-feedback latency.</li>
-          <li>Validated the hardware to 92% obstacle-detection accuracy, staying below 70 °C under load.</li>
-          <li>Prototyped enclosures in Fusion 360, 3D printed them, and did the SMD and through-hole soldering by hand.</li>
+          <li>Designed a new battery PCB that made the device 18% smaller and 12% lighter.</li>
+          <li>Changed how the sensors are read so the warning vibration reacts faster.</li>
+          <li>Tested the device to 92% accuracy at spotting obstacles, while keeping it below 70 °C.</li>
+          <li>Designed and 3D-printed the enclosures, and soldered the electronics by hand.</li>
         </ul>
         <figure class="rolefig">
         <button type="button" class="zoom" aria-label="Enlarge image"><img src="oculosense.jpg" width="1200" height="900" loading="lazy" alt="A pair of dark glasses with 3D-printed black housings for the sensor and electronics mounted on both arms, on a workbench."></button>
-        <figcaption>An OculoSense prototype: the sensor and electronics in printed housings on the arms of the glasses.</figcaption>
+        <figcaption>An OculoSense prototype: the sensors and electronics sit in 3D-printed housings on the arms of the glasses.</figcaption>
       </figure>
       </article>
     </div>
@@ -464,10 +469,10 @@ figcaption { margin-top: 0.65rem; color: var(--muted); font-size: 0.95rem; max-w
       <article class="row">
         <div>
           <h3>Custom ESP32-C3 development board</h3>
-          <p class="kind">Designed as the ARRSY node</p>
+          <p class="kind">Made for ARRSY</p>
         </div>
         <div>
-          <p class="body">A compact, low-power board to replace the off-the-shelf module in ARRSY. I did the schematic capture and layout in KiCad with signal integrity and manufacturability in mind, then soldered it myself.</p>
+          <p class="body">A small, power-saving PCB I designed to replace the ready-made module inside ARRSY. I designed the circuit and its layout, then soldered the parts on myself.</p>
           <p class="parts">ESP32-C3, KiCad, SMD assembly</p>
         </div>
       </article>
@@ -475,10 +480,10 @@ figcaption { margin-top: 0.65rem; color: var(--muted); font-size: 0.95rem; max-w
       <article class="row">
         <div>
           <h3>Firebird V waste-sorting robot</h3>
-          <p class="kind">Autonomous robot for e-Yantra</p>
+          <p class="kind">Self-driving robot for the e-Yantra competition</p>
         </div>
         <div>
-          <p class="body">An autonomous robot that sorts organic, recyclable and hazardous waste into the right bins, programmed in C and C++ on AVR with precise motor control and sensor logic.</p>
+          <p class="body">A robot that sorts rubbish on its own, putting organic, recyclable and hazardous waste into the right bins. I programmed how it moves and reads its sensors.</p>
           <p class="parts">Firebird V, ATmega2560, C and C++</p>
         </div>
       </article>
@@ -489,17 +494,18 @@ figcaption { margin-top: 0.65rem; color: var(--muted); font-size: 0.95rem; max-w
 <section class="section" id="toolkit">
   <div class="wrap">
     <h2>What I work with</h2>
+    <p class="intro">The tools and technologies behind the projects above.</p>
     <div class="split">
       <dl class="spec">
-        <div><dt>PCB design</dt><dd>Altium, KiCad <small>up to 8 layers; circuit simulation, SMD soldering</small></dd></div>
-        <div><dt>Firmware</dt><dd>C, C++, Python <small>ESP-IDF, FreeRTOS, ESP32, ARM microcontrollers, Raspberry Pi</small></dd></div>
-        <div><dt>Mechanical</dt><dd>Fusion 360 <small>SLA and FDM 3D printing</small></dd></div>
-        <div><dt>Buses and radio</dt><dd>I2C, SPI, UART, CAN <small>Bluetooth and BLE, Wi-Fi, Zigbee, LoRaWAN</small></dd></div>
+        <div><dt>PCB design</dt><dd>Altium, KiCad <small>boards of up to 8 layers, simulation and hand soldering</small></dd></div>
+        <div><dt>Device code</dt><dd>C, C++, Python <small>for ESP32, ARM chips and Raspberry Pi, with ESP-IDF and FreeRTOS</small></dd></div>
+        <div><dt>Enclosures and parts</dt><dd>Fusion 360 <small>designed for resin and filament 3D printing</small></dd></div>
+        <div><dt>Connections</dt><dd>I2C, SPI, UART, CAN <small>wireless: Bluetooth, Wi-Fi, Zigbee, LoRaWAN</small></dd></div>
       </dl>
       <dl class="spec">
-        <div><dt>IoT</dt><dd>WebSockets, OTA updates <small>sensor integration, edge AI, TinyML</small></dd></div>
-        <div><dt>Robotics</dt><dd>ROS 2, LiDAR <small>point-cloud capture and registration in CloudCompare</small></dd></div>
-        <div><dt>Tools</dt><dd>Git, VS Code <small>Proteus, MATLAB</small></dd></div>
+        <div><dt>Connected devices</dt><dd>WebSockets, over-the-air updates <small>sensors, and small AI models that run on the device itself</small></dd></div>
+        <div><dt>Robotics and 3D</dt><dd>ROS 2, LiDAR <small>capturing 3D scans and joining them in CloudCompare</small></dd></div>
+        <div><dt>Everyday tools</dt><dd>Git, VS Code <small>Proteus, MATLAB</small></dd></div>
       </dl>
     </div>
   </div>
@@ -540,14 +546,14 @@ figcaption { margin-top: 0.65rem; color: var(--muted); font-size: 0.95rem; max-w
 
 <footer class="contact" id="contact">
   <div class="wrap">
-    <h2>Have a board that needs designing?</h2>
-    <p>I am always glad to talk about embedded, IoT and PCB design work, and to walk through any of these projects in detail, down to the layer stack.</p>
+    <h2>Have a PCB that needs designing?</h2>
+    <p>I’m always happy to talk about electronics, PCBs and smart devices, and to walk you through any of the work above in as much detail as you like.</p>
     <div class="ways">
       <a class="btn solid" href="mailto:guptarahul0197@gmail.com">guptarahul0197@gmail.com</a>
       <a class="btn" href="https://www.linkedin.com/in/rahul-gupta-h0197c/" target="_blank" rel="noopener">LinkedIn</a>
       <a class="btn" href="https://github.com/HellbeE908/SPECTER" target="_blank" rel="noopener">GitHub</a>
     </div>
-    <p class="fine">Rahul Gupta, Gurugram, India. The point cloud at the top is the park survey, thinned to 1,24,238 points for the browser.</p>
+    <p class="fine">Rahul Gupta, Gurugram, India. The 3D scan at the top is the real park scan, simplified to 1,24,238 points so it loads quickly.</p>
   </div>
 </footer>
 
@@ -602,7 +608,7 @@ figcaption { margin-top: 0.65rem; color: var(--muted); font-size: 0.95rem; max-w
   var W = 0, H = 0, img = null, buf = null, dot = 1, wide = false, pxr = 1;
   function resize() {
     var narrow = cv.clientWidth <= 820;
-    var dpr = Math.min(window.devicePixelRatio || 1, narrow ? 3 : 2);
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
     var w = Math.max(1, Math.round(cv.clientWidth * dpr));
     var h = Math.max(1, Math.round(cv.clientHeight * dpr));
     if (w === W && h === H) return;
@@ -626,34 +632,40 @@ figcaption { margin-top: 0.65rem; color: var(--muted); font-size: 0.95rem; max-w
     { t: "Benches", p: [1.92, 3.05, -2.05], dx: 56, dy: -60 },
     { t: "Tree trunk", p: [-5.81, 1.15, -1.0], dx: -60, dy: -44 },
     { t: "Lamp post", p: [9.03, 0.51, 0.3], dx: 50, dy: -46 },
-    { t: "Paved ground", p: [2.5, -1.5, -2.6], dx: -54, dy: 46 }
+    { t: "Paved ground", p: [2.5, -1.5, -2.6], dx: 0, dy: 52 }
   ];
+  var fontPx = 0, ldt = 16;
+  for (var n0 = 0; n0 < LABELS.length; n0++) { LABELS[n0].a = 0; LABELS[n0].w = 0; }
   function drawLabels(cy, sy, ce, se, focal, cx0, cy0) {
-    var s = pxr, o = wide ? 1 : 0.7, edge = wide ? W * 0.42 : 0, bh = (wide ? 24 : 20) * s, pad = (wide ? 9 : 7) * s, m = 4 * s, boxes = [];
+    var s = pxr, o = wide ? 1 : 0.7, edge = wide ? W * 0.42 : 0, bh = Math.round((wide ? 24 : 20) * s), pad = Math.round((wide ? 9 : 7) * s), m = 4 * s, boxes = [];
+    var fp = Math.round((wide ? 12.5 : 10.5) * s);
     ctx.save();
-    ctx.globalAlpha = labelA;
-    ctx.font = "600 " + Math.round((wide ? 12.5 : 10.5) * s) + "px Archivo, 'Segoe UI', Arial, sans-serif";
+    ctx.font = "600 " + fp + "px Archivo, 'Segoe UI', Arial, sans-serif";
+    if (fp !== fontPx) { fontPx = fp; for (var w0 = 0; w0 < LABELS.length; w0++) LABELS[w0].w = Math.ceil(ctx.measureText(LABELS[w0].t).width); }
     ctx.textBaseline = "middle";
-    ctx.lineWidth = 1.5 * s;
+    ctx.lineWidth = Math.max(1, Math.round(1.5 * s));
+    var ease = Math.min(1, ldt / 180);
     for (var k = 0; k < LABELS.length; k++) {
-      var L = LABELS[k], x = L.p[0], y = L.p[1], z = L.p[2];
+      var L = LABELS[k], x = L.p[0], y = L.p[1], z = L.p[2], show = false;
       var xr = x * cy - y * sy, yr = x * sy + y * cy, depth = yr * ce - z * se + DIST;
-      if (depth < 2) continue;
-      var ax = cx0 + focal * xr / depth, ay = cy0 - focal * (yr * se + z * ce) / depth;
-      var px = ax + L.dx * s * o, py = ay + L.dy * s * o;
-      var bw = ctx.measureText(L.t).width + 2 * pad, bx, by;
-      if (L.dx > 0) { bx = px; by = py - bh / 2; }
-      else if (L.dx < 0) { bx = px - bw; by = py - bh / 2; }
-      else { bx = px - bw / 2; by = L.dy < 0 ? py - bh : py; }
-      if (ax < edge + m || ax > W - m || ay < m || ay > H - m) continue;
-      if (bx < edge || bx + bw > W - m || by < m || by + bh > H - m) continue;
-      var hit = false;
-      for (var q = 0; q < boxes.length; q++) {
-        var B = boxes[q];
-        if (bx < B[0] + B[2] + m && bx + bw + m > B[0] && by < B[1] + B[3] + m && by + bh + m > B[1]) { hit = true; break; }
+      var ax = 0, ay = 0, px = 0, py = 0, bw = L.w + 2 * pad, bx = 0, by = 0;
+      if (depth >= 2) {
+        ax = Math.round(cx0 + focal * xr / depth); ay = Math.round(cy0 - focal * (yr * se + z * ce) / depth);
+        px = Math.round(ax + L.dx * s * o); py = Math.round(ay + L.dy * s * o);
+        if (L.dx > 0) { bx = px; by = py - bh / 2; }
+        else if (L.dx < 0) { bx = px - bw; by = py - bh / 2; }
+        else { bx = px - bw / 2; by = L.dy < 0 ? py - bh : py; }
+        bx = Math.round(bx); by = Math.round(by);
+        show = !(ax < edge + m || ax > W - m || ay < m || ay > H - m || bx < edge || bx + bw > W - m || by < m || by + bh > H - m);
+        for (var q = 0; show && q < boxes.length; q++) {
+          var B = boxes[q];
+          if (bx < B[0] + B[2] + m && bx + bw + m > B[0] && by < B[1] + B[3] + m && by + bh + m > B[1]) show = false;
+        }
       }
-      if (hit) continue;
-      boxes.push([bx, by, bw, bh]);
+      L.a += ((show ? 1 : 0) - L.a) * ease;
+      if (show) boxes.push([bx, by, bw, bh]);
+      if (L.a < 0.02 || depth < 2) continue;
+      ctx.globalAlpha = labelA * L.a;
       var vx = ax - px, vy = ay - py, len = Math.sqrt(vx * vx + vy * vy) || 1;
       vx /= len; vy /= len;
       var tipX = ax - vx * 3 * s, tipY = ay - vy * 3 * s, ah = 8 * s, aw = 4.5 * s;
@@ -664,12 +676,13 @@ figcaption { margin-top: 0.65rem; color: var(--muted); font-size: 0.95rem; max-w
       ctx.lineTo(tipX - vx * ah + vy * aw, tipY - vy * ah - vx * aw);
       ctx.closePath(); ctx.fill();
       ctx.fillStyle = "rgba(9, 29, 51, 0.88)"; ctx.strokeStyle = "rgba(226, 185, 59, 0.7)";
-      ctx.beginPath(); ctx.rect(bx, by, bw, bh); ctx.fill(); ctx.stroke();
-      ctx.fillStyle = "#EEF2EE"; ctx.fillText(L.t, bx + pad, by + bh / 2 + 0.5 * s);
+      ctx.fillRect(bx, by, bw, bh); ctx.strokeRect(bx + 0.5, by + 0.5, bw - 1, bh - 1);
+      ctx.fillStyle = "#EEF2EE"; ctx.fillText(L.t, bx + pad, by + Math.round(bh / 2));
     }
     ctx.restore();
   }
 
+  var lastShown = -1;
   function draw() {
     if (!buf || !ready) return;
     buf.fill(BG);
@@ -692,7 +705,7 @@ figcaption { margin-top: 0.65rem; color: var(--muted); font-size: 0.95rem; max-w
     }
     ctx.putImageData(img, 0, 0);
     if (!sweeping && labelA > 0) drawLabels(cy, sy, ce, se, focal, cx0, cy0);
-    countEl.textContent = shown.toLocaleString("en-IN");
+    if (shown !== lastShown) { lastShown = shown; countEl.textContent = shown.toLocaleString("en-IN"); }
   }
 
   var visible = true, raf = 0, last = 0, dragging = false;
@@ -700,7 +713,7 @@ figcaption { margin-top: 0.65rem; color: var(--muted); font-size: 0.95rem; max-w
     raf = 0;
     if (!visible) return;
     if (!last) last = now;
-    var dt = Math.min(64, now - last); last = now;
+    var dt = Math.min(64, now - last); last = now; ldt = dt;
     if (sweeping) {
       if (!startAt) startAt = now;
       var prog = (now - startAt) / SWEEP_MS;
@@ -777,8 +790,7 @@ figcaption { margin-top: 0.65rem; color: var(--muted); font-size: 0.95rem; max-w
   });
 })();
 </script>
-<script src="pcb.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
 <script>
 /* Careflick board: 3D model exported from KiCad, drawn with three.js. */
 (function () {
@@ -798,8 +810,8 @@ figcaption { margin-top: 0.65rem; color: var(--muted); font-size: 0.95rem; max-w
 
   function build() {
     var THREE = window.THREE;
-    var meta = window.PCB_META;
-    var bin = atob(window.PCB_B64);
+    var meta = window.PCB_META || window.PCB_META;
+    var bin = atob(window.PCB_B64 || document.getElementById("pcb-data").textContent.trim());
     var bytes = new Uint8Array(bin.length);
     for (var b = 0; b < bin.length; b++) bytes[b] = bin.charCodeAt(b);
 
@@ -844,7 +856,7 @@ figcaption { margin-top: 0.65rem; color: var(--muted); font-size: 0.95rem; max-w
     var cv = renderer.domElement;
     cv.setAttribute("role", "img");
     cv.setAttribute("tabindex", "0");
-    cv.setAttribute("aria-label", "3D model of the Careflick circuit board with its components. Drag or use the arrow keys to rotate.");
+    cv.setAttribute("aria-label", "3D model of the Careflick PCB with its components. Drag or use the arrow keys to rotate.");
     host.appendChild(cv);
 
     var scene = new THREE.Scene();
@@ -926,10 +938,22 @@ figcaption { margin-top: 0.65rem; color: var(--muted); font-size: 0.95rem; max-w
     size();
   }
 
+  function load(src, done) {
+    var tag = document.createElement("script");
+    tag.src = src; tag.onload = done; tag.onerror = done;
+    document.head.appendChild(tag);
+  }
   function start() {
     if (started) return; started = true;
-    if (!window.THREE) { fail("The 3D model could not load here. It needs the three.js library, which this network blocked."); return; }
-    try { build(); } catch (err) { fail("The 3D model needs WebGL, which is not available in this browser."); }
+    var need = [];
+    if (!window.THREE) need.push("https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js");
+    if (!window.PCB_META && !document.getElementById("pcb-meta")) need.push("pcb.js");
+    (function next() {
+      if (need.length) { load(need.shift(), next); return; }
+      if (!window.THREE) { fail("The 3D model could not load here. It needs the three.js library, which this network blocked."); return; }
+      if (!window.PCB_META && !document.getElementById("pcb-meta")) { fail("The 3D model could not load. Reload the page to try again."); return; }
+      try { build(); } catch (err) { fail("The 3D model needs WebGL, which is not available in this browser."); }
+    })();
   }
   if ("IntersectionObserver" in window) {
     var io = new IntersectionObserver(function (en) {
@@ -937,6 +961,41 @@ figcaption { margin-top: 0.65rem; color: var(--muted); font-size: 0.95rem; max-w
     }, { rootMargin: "600px" });
     io.observe(host);
   } else { start(); }
+})();
+</script>
+<script>
+/* Highlight the section being read and slide the menu so its link is in view (phones). */
+(function () {
+  "use strict";
+  var bar = document.querySelector(".navlinks");
+  if (!bar || !("IntersectionObserver" in window)) return;
+  var links = {}, current = null;
+  function edges() {
+    bar.classList.toggle("fl", bar.scrollLeft > 2);
+    bar.classList.toggle("fr", bar.scrollLeft + bar.clientWidth < bar.scrollWidth - 2);
+  }
+  bar.addEventListener("scroll", edges, { passive: true });
+  window.addEventListener("resize", edges);
+  edges();
+  bar.querySelectorAll("a").forEach(function (a) { links[a.getAttribute("href").slice(1)] = a; });
+  function pick(id) {
+    var a = links[id] || null;
+    if (a === current) return;
+    if (current) current.classList.remove("on");
+    current = a;
+    if (!a) { if (id === "top") bar.scrollTo({ left: 0, behavior: "smooth" }); return; }
+    a.classList.add("on");
+    if (bar.scrollWidth > bar.clientWidth) {
+      var left = a.getBoundingClientRect().left - bar.getBoundingClientRect().left + bar.scrollLeft - 28;
+      bar.scrollTo({ left: Math.max(0, left), behavior: "smooth" });
+    }
+  }
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) { if (e.isIntersecting) pick(e.target.id); });
+  }, { rootMargin: "-40% 0px -55% 0px" });
+  ["top", "specter", "arrsy", "experience", "builds", "toolkit", "record", "contact"].forEach(function (id) {
+    var el = document.getElementById(id); if (el) io.observe(el);
+  });
 })();
 </script>
 </body>
